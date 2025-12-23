@@ -43,7 +43,8 @@ Il sistema decide autonomamente ("Agentic decision-making") quale fonte utilizza
 Clona il repository:
 ```bash
 git clone [https://github.com/TUO_USERNAME/company-assistant.git](https://github.com/TUO_USERNAME/company-assistant.git)
-cd company-assistant```
+cd company-assistant
+```
 
 Crea un ambiente virtuale e installa le dipendenze:
 
