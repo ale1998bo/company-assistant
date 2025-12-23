@@ -52,20 +52,21 @@ Crea un ambiente virtuale e installa le dipendenze:
 python -m venv env_agente
 source env_agente/bin/activate  # Su Windows: .\env_agente\Scripts\activate
 pip install -r requirements.txt
-Autenticati con Google Cloud:
 ```
+
+Autenticati con Google Cloud:
 
 ```bash
 gcloud auth application-default login
-2. Preparazione Dati
-Inserisci i tuoi documenti aziendali (PDF, Markdown, TXT) nella cartella:
 ```
 
+### 1. Preparazione Dati
+Inserisci i tuoi documenti aziendali (PDF, Markdown, TXT) nella cartella:
 
 ```Plaintext
 Knowledge Base/
-Il sistema indicizzerà automaticamente i nuovi file all'avvio.
 ```
+Il sistema indicizzerà automaticamente i nuovi file all'avvio.
 
 ### 3. Avvio
 Interfaccia Web:
@@ -73,47 +74,11 @@ Interfaccia Web:
 ```bash
 python main.py
 # Apri http://localhost:8080
-Interfaccia CLI:
 ```
-
+Interfaccia CLI:
 ```bash
 python cli.py
+```
 ☁️ Deployment su Google Cloud Run
-L'applicazione è pronta per il cloud (stateless, container-ready).
-```
-
-Assicurati di avere i file Procfile e .gcloudignore.
-
-Lancia il deploy:
-
-```bash
-gcloud run deploy company-assistant --source . --region europe-west1 --allow-unauthenticated
-Assegna il ruolo "Vertex AI User" al Service Account di default di Compute Engine nel pannello IAM.
-```
-
-🧪 Demo Scenarios
-Ecco come testare le capacità dell'agente:
-
-Query Aziendale (RAG):
-
-Carica: Un file regolamento.pdf con "Il rimborso spese è massimo 50€".
-
-Domanda: "Qual è il limite per il rimborso spese?"
-
-Risultato: L'agente risponde citando il documento (Badge Verde).
-
-Query Generale (Web Search):
-
-Domanda: "Chi ha vinto l'ultimo premio Oscar come miglior film?"
-
-Risultato: L'agente non trova info nei documenti, attiva Google Search e risponde con dati aggiornati (Badge Blu).
-
-Conversazione Contestuale:
-
-User: "Chi è il CEO?" (Risposta da doc)
-
-User: "Quanti anni ha?"
-
-Risultato: L'agente capisce che il soggetto è il CEO citato prima.
-
-Autore: Alessandro Frabetti Licenza: MIT
+L'applicazione è già stata deployata ed è accessibile online. Puoi provarla direttamente qui:
+👉 [https://company-assistant-573847000470.europe-west1.run.app](https://company-assistant-573847000470.europe-west1.run.app)
