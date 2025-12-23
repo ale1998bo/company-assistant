@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Agent AI</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-body: #f3f4f6;
+            --bg-panel: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 300px; background: var(--bg-panel); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .upload-area { border: 2px dashed var(--border); padding: 20px; text-align: center; border-radius: 8px; transition: 0.3s; }
+        .upload-area:hover { border-color: var(--primary); background: #f0f7ff; }
+        .upload-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 500; }
+        .upload-btn:hover { opacity: 0.9; }
+        .status-msg { font-size: 0.85rem; margin-top: 10px; color: var(--text-light); }
+
+        /* MAIN CHAT AREA */
+        .main-chat { flex: 1; display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .chat-history { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* BUBBLES */
+        .message { max-width: 80%; line-height: 1.5; padding: 15px 20px; border-radius: 12px; font-size: 0.95rem; position: relative; }
+        .msg-user { align-self: flex-end; background-color: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg-bot { align-self: flex-start; background-color: var(--bg-panel); border: 1px solid var(--border); border-bottom-left-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        /* METADATA BADGES */
+        .meta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.75rem; color: var(--text-light); }
+        .badge { padding: 3px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; }
+        .badge-internal { background: #dcfce7; color: #166534; } /* Verde per DB locale */
+        .badge-web { background: #e0f2fe; color: #075985; }      /* Blu per Web */
+        
+        .sources-list { font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; color: var(--text-light); }
+
+        /* INPUT AREA */
+        .input-area { padding: 20px; background: var(--bg-body); display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        input[type="text"] { flex: 1; padding: 15px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        input[type="text"]:focus { border-color: var(--primary); }
+        .send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            🤖 Company Agent
+        </div>
+        
+        <div class="upload-area">
+            <p style="margin:0; font-size:0.9rem;">Carica Documenti</p>
+            <small style="color:#888;">PDF, MD, TXT</small>
+            <input type="file" id="fileUpload" style="display:none" onchange="updateFileName()">
+            <button class="upload-btn" onclick="document.getElementById('fileUpload').click()">Scegli File</button>
+            <div id="fileNameDisplay" style="margin-top:5px; font-size:0.8rem; font-weight:bold;"></div>
+            <button class="upload-btn" style="background:#4b5563; margin-top:5px;" onclick="caricaFile()">Carica ora</button>
+        </div>
+        <div id="uploadStatus" class="status-msg"></div>
+
+        <div style="margin-top:auto; font-size:0.8rem; color:#888;">
+            <p><strong>Logica Router:</strong></p>
+            <ul style="padding-left:20px;">
+                <li>Score > 0.5: RAG Interno</li>
+                <li>Score < 0.5: Google Search</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-chat">
+        <div id="chat-history" class="chat-history">
+            <div class="message msg-bot">
+                <div>Ciao! Sono il tuo assistente ibrido.</div>
+                <div style="margin-top:5px;">Chiedimi informazioni sui documenti caricati o domande generali (userò Google).</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="domanda" placeholder="Fai una domanda..." onkeypress="if(event.key==='Enter') inviaDomanda()">
+            <button class="send-btn" onclick="inviaDomanda()">Invia</button>
+        </div>
+    </div>
+
+    <script>
+        function updateFileName() {
+            const input = document.getElementById('fileUpload');
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files.length > 0) {
+                display.innerText = input.files[0].name;
+            }
+        }
+
+        async function inviaDomanda() {
+            const input = document.getElementById('domanda');
+            const history = document.getElementById('chat-history');
+            const query = input.value.trim();
+            if (!query) return;
+
+            // 1. Aggiungi messaggio utente
+            history.innerHTML += `<div class="message msg-user">${query}</div>`;
+            input.value = '';
+            
+            // 2. Loading Placeholder
+            const loadingId = 'load-' + Date.now();
+            history.innerHTML += `
+                <div id="${loadingId}" class="message msg-bot" style="color:#888">
+                    ... Valutazione Router (RAG vs Web) ...
+                </div>`;
+            history.scrollTop = history.scrollHeight;
+
+            try {
+                const response = await fetch('/api/esegui-azione', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await response.json();
+                
+                document.getElementById(loadingId).remove();
+
+                // 3. Costruisci UI basata sulla modalità
+                let badgeHtml = '';
+                if(data.modalita === 'internal') {
+                    badgeHtml = `<span class="badge badge-internal">📂 Knowledge Base (Score: ${data.score.toFixed(2)})</span>`;
+                } else {
+                    badgeHtml = `<span class="badge badge-web">🌐 Google Search (Score: ${data.score.toFixed(2)})</span>`;
+                }
+
+                let sourcesHtml = '';
+                if(data.fonti && data.fonti.length > 0) {
+                    sourcesHtml = `<div class="sources-list">Fonti: ${data.fonti.join(', ')}</div>`;
+                }
+
+                const botHtml = `
+                    <div class="message msg-bot">
+                        <div class="meta-header">
+                            ${badgeHtml}
+                        </div>
+                        <div>${data.messaggio.replace(/\n/g, '<br>')}</div>
+                        ${sourcesHtml}
+                    </div>
+                `;
+                history.innerHTML += botHtml;
+                
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "Errore di connessione.";
+            }
+            history.scrollTop = history.scrollHeight;
+        }
+
+        async function caricaFile() {
+            const fileInput = document.getElementById('fileUpload');
+            const status = document.getElementById('uploadStatus');
+            
+            if(fileInput.files.length === 0) {
+                alert("Seleziona prima un file!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            status.innerText = "Caricamento...";
+
+            try {
+                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await response.json();
+                status.innerText = data.messaggio || "Errore";
+                status.style.color = "green";
+                fileInput.value = ''; 
+                document.getElementById('fileNameDisplay').innerText = '';
+            } catch (error) {
+                status.innerText = "Errore upload.";
+                status.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

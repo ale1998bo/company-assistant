@@ -1,0 +1,46 @@
+# --- Python ---
+# Escludi file compilati e cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Escludi ambienti virtuali (CRUCIALE: Cloud Run crea il proprio)
+env/
+venv/
+.venv/
+.env
+
+# --- Frontend / Web ---
+# Se usi npm per gestire pacchetti JS
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# --- Sistema Operativo e Git ---
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- File che causano spesso UnicodeDecodeError ---
+# Escludi file binari o eseguibili locali che non servono nel cloud
+*.exe
+*.dll
+*.so
+*.dylib
+*.zip
+*.rar
+
+# --- Editor ---
+.vscode/
+.idea/.git/
+.gitignore
+env_agente/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+vector_store.json

@@ -1,0 +1,7 @@
+flask
+google-cloud-aiplatform
+google-genai
+pypdf
+numpy
+werkzeug
+gunicorn
