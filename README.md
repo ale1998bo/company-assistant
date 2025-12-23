@@ -48,47 +48,48 @@ cd company-assistant
 
 Crea un ambiente virtuale e installa le dipendenze:
 
-Bash
-
+```bash
 python -m venv env_agente
 source env_agente/bin/activate  # Su Windows: .\env_agente\Scripts\activate
 pip install -r requirements.txt
 Autenticati con Google Cloud:
+```
 
-Bash
-
+```bash
 gcloud auth application-default login
 2. Preparazione Dati
 Inserisci i tuoi documenti aziendali (PDF, Markdown, TXT) nella cartella:
+```
 
-Plaintext
 
+```Plaintext
 Knowledge Base/
 Il sistema indicizzerà automaticamente i nuovi file all'avvio.
+```
 
-3. Avvio
+### 3. Avvio
 Interfaccia Web:
 
-Bash
-
+```bash
 python main.py
 # Apri http://localhost:8080
 Interfaccia CLI:
+```
 
-Bash
-
+```bash
 python cli.py
 ☁️ Deployment su Google Cloud Run
 L'applicazione è pronta per il cloud (stateless, container-ready).
+```
 
 Assicurati di avere i file Procfile e .gcloudignore.
 
 Lancia il deploy:
 
-Bash
-
+```bash
 gcloud run deploy company-assistant --source . --region europe-west1 --allow-unauthenticated
 Assegna il ruolo "Vertex AI User" al Service Account di default di Compute Engine nel pannello IAM.
+```
 
 🧪 Demo Scenarios
 Ecco come testare le capacità dell'agente:
@@ -115,4 +116,4 @@ User: "Quanti anni ha?"
 
 Risultato: L'agente capisce che il soggetto è il CEO citato prima.
 
-Autore: [Il Tuo Nome] Licenza: MIT
+Autore: Alessandro Frabetti Licenza: MIT
