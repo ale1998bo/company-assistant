@@ -18,7 +18,7 @@ class Colors:
 # --- CONFIGURAZIONE ---
 PROJECT_ID = "company-assistant-482110"
 REGION = "us-central1"
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 SIMILARITY_THRESHOLD = 0.4
 KNOWLEDGE_FOLDER = "Knowledge Base"
 MAX_HISTORY = 6  # Ricorda gli ultimi 3 scambi (User + AI)
