@@ -19,13 +19,13 @@ Il sistema decide autonomamente ("Agentic decision-making") quale fonte utilizza
 
 ### Stack Tecnologico
 * **Backend:** Python 3.10+, Flask (Web Server).
-* **AI Core:** Google Gemini 1.5 Flash (via `google-genai` SDK).
+* **AI Core:** Google Gemini 2.5 Flash (via `google-genai` SDK).
 * **Embedding:** Google `text-embedding-004`.
 * **Vector Store:** Implementazione locale in-memory con persistenza JSON (Numpy per calcoli di similarità coseno).
 * **Deployment:** Google Cloud Run (Dockerless setup).
 
 ### Design Rationale
-1.  **Perché Gemini 1.5 Flash?** Scelto per la bassa latenza e il costo ridotto, ideale per un assistente real-time.
+1.  **Perché Gemini 2.5 Flash?** Scelto per la bassa latenza e il costo ridotto, ideale per un assistente real-time.
 2.  **Router Semantico vs Tool Calling:** È stato implementato un router esplicito basato su soglia di similarità (Threshold 0.5) per avere un controllo deterministico e ridurre le allucinazioni su dati aziendali critici.
 3.  **Persistenza JSON:** Per questo prototipo, un file JSON evita la complessità di gestire un database vettoriale esterno (come Milvus o Pinecone), mantenendo l'app portabile e semplice.
 
@@ -42,7 +42,7 @@ Il sistema decide autonomamente ("Agentic decision-making") quale fonte utilizza
 
 Clona il repository:
 ```bash
-git clone [https://github.com/TUO_USERNAME/company-assistant.git](https://github.com/TUO_USERNAME/company-assistant.git)
+git clone [https://github.com/ale1998bo/company-assistant.git](https://github.com/ale1998bo/company-assistant.git)
 cd company-assistant
 ```
 
